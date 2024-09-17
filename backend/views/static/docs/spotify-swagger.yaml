@@ -1,0 +1,121 @@
+openapi: 3.0.0
+info:
+  title: Spotify API
+  description: API for Spotify authentication and song management
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /spotify-auth:
+    get:
+      summary: Authorize Spotify
+      description: Initiates the Spotify authorization process
+      responses:
+        '200':
+          description: Redirect to Spotify authorization
+          content:
+            text/html:
+              schema:
+                type: string
+                example: '<html>...</html>'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Forbidden"
+
+  /search-songs:
+    get:
+      summary: Search for songs
+      description: Searches for songs based on the provided query
+      parameters:
+        - in: query
+          name: song
+          schema:
+            type: string
+            example: "Lose Yourself"
+          required: true
+          description: The name of the song to search for
+      responses:
+        '200':
+          description: Songs found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    example: "spotify:track:6rqhFgbbKwnb9MLmUQDhG6"
+                  id:
+                    type: string
+                    example: "6rqhFgbbKwnb9MLmUQDhG6"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You must be logged in"
+
+  /add-songs-to-queue:
+    post:
+      summary: Add songs to the queue
+      description: Adds songs to the user's Spotify queue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                playlist:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        example: "Lose Yourself"
+                      artist:
+                        type: string
+                        example: "Eminem"
+      responses:
+        '200':
+          description: Songs added to queue
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Songs added to queue"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "You must be logged in"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid request format"

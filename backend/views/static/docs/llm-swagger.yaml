@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: Groq API
+  description: API for fetching songs from the Groq API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /get-songs:
+    post:
+      summary: Fetch songs from the Groq API
+      description: Fetches songs based on the user's mood from the Groq API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "I am feeling happy"
+      responses:
+        '200':
+          description: Songs fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  songs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          example: "Happy Song"
+                        artist:
+                          type: string
+                          example: "Happy Artist"
+        '400':
+          description: Invalid format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid format"
