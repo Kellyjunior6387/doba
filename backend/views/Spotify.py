@@ -37,7 +37,7 @@ def get_access_token():
     print(code)
     token = DB.find_token(session_id=session_id)
     if token:
-        return jsonify({'Message': 'Token already exists'})
+        return jsonify({'Message': 'Token already exists'}), 304
     response = Spotify.get_access_token(code=code)
     if response:
         access_token = response.get('access_token')
@@ -83,7 +83,7 @@ def add_to_queue():
                     Spotify.add_queue(session_id, track_uri)
                 else:
                     print(f"Could not find URI for {title} by {artist}")
-            return jsonify({'Message': 'Succesfully added to queue'}), 200
+            return jsonify({'Message': 'The Songs were succesfully added to the queue'}), 200
     return jsonify({'Error': 'An error occurred'}), 400
 
 
