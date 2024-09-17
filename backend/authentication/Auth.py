@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Module to encrypt a password"""
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 import bcrypt
-from db import DB
-from user import User
+from models.db import DB
+from models.user import User
 from uuid import uuid4
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -50,6 +53,7 @@ class Auth:
         try:
             user = self._db.find_user_by(email=email)
             id = _generate_uuid()
+            self._db.update_user(user.id, session_id=id)
             user.session_id = id
             return id
         except NoResultFound:

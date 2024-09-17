@@ -2,6 +2,10 @@
 """
 DB module
 """
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+from datetime import timedelta, datetime
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -10,7 +14,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 
 from user import Base, User
-
+from spotify_tokens import SpotifyToken
 
 class DB:
     """DB class
@@ -48,6 +52,7 @@ class DB:
         self._session.commit()
         return user
 
+   
     def find_user_by(self, **kwargs) -> User:
         """
         Return a user who has an attribute matching the attributes passed
@@ -83,6 +88,50 @@ class DB:
                 for key, value in kwargs.items():
                     if hasattr(user, key):
                         setattr(user, key, value)
+                        self._session.commit()
+                    else:
+                        raise ValueError
+            except NoResultFound:
+                raise ValueError
+
+    def add_token(self, session_id: str, access_token: str, refresh_token: str, expires_in: str):
+        expiry = datetime.now() + timedelta(seconds=expires_in)
+        token = SpotifyToken(session_id=session_id,
+                             access_token=access_token,
+                             refresh_token=refresh_token,
+                             expires_in=expiry)
+        self._session.add(token)
+        self._session.commit()
+        return token
+    
+    def find_token(self, session_id: str) -> SpotifyToken:
+        """
+        Return a token with the matching session id
+        Args:
+            session_id (str): session id to match
+        Return:
+            matching SpotifyToken object or None if not found
+        """
+        token = self._session.query(SpotifyToken).filter_by(session_id=session_id).first()
+        return token
+
+    def update_token(self, session_id: int, **kwargs) -> None:
+        """
+        Update a user's attributes
+        Args:
+            user_id (int): user's id
+            kwargs (dict): dict of key, value pairs representing the
+                           attributes to update and the values to update
+                           them with
+        Return:
+            No return value
+        """
+        token = self.find_token(session_id=session_id)
+        if token:
+            try:
+                for key, value in kwargs.items():
+                    if hasattr(token, key):
+                        setattr(token, key, value)
                         self._session.commit()
                     else:
                         raise ValueError
