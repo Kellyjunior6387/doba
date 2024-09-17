@@ -14,6 +14,7 @@ CLIENT_SECRET_KEY = os.getenv('CLIENT_SECRET_KEY')
 DB = DB()
 
 class Spotify:
+    """A class to implement the spotify api calls"""
     def authorize(self, state):
         """Function to authorize a user in spotify"""
         params = {
