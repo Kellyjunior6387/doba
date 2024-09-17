@@ -15,11 +15,6 @@ Groq = Groq_API()
 groq = Blueprint('groq', __name__)
 
 
-@groq.route("/message", methods=["GET"], strict_slashes=False)
-def message() -> str:
-    """Start the auth"""
-    return jsonify({"message": "Bienvenue"})
-
 @groq.route("/get-songs", methods=["POST"], strict_slashes=False)
 def index() -> str:
     """Fetch the songs from the groq api"""
